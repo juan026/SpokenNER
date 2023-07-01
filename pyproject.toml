@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "SpokenNer"
+version = "0.1.0"
+description = ""
+authors = ["Moncef Benaicha <support@moncefbenaicha.me>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+transformers = "^4.26.1"
+numpy = "^1.24.2"
+torch = "^1.13.1"
+torchaudio = "^0.13.1"
+matplotlib = "^3.7.0"
+seaborn = "^0.12.2"
+evaluate = "^0.4.0"
+jiwer = "^2.5.1"
+seqscore = {git = "https://github.com/MoncefBenaicha/seqscore.git"}
+better-exceptions = "^0.3.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
