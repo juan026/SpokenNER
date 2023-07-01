@@ -1,4 +1,4 @@
-<div style="text-align:center">
+<div align="center">
 
   <h3>Exploring Spoken Named Entity Recognition: A Cross-Lingual Perspective</h3>
     
