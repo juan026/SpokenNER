@@ -24,7 +24,6 @@
     <li><a href="#about-this-repo">About This Repo</a></li>
     <li><a href="#data">Data</a></li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#usage">Results</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
     <li><a href="#paper-citation">Paper Citation</a></li>
