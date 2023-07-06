@@ -5,7 +5,7 @@
   <p>
     Git Repo for the paper source code and data
     <br />
-    <a href="">Paper</a>
+    <a href="https://arxiv.org/abs/2307.01310">Paper</a>
     ·
     <a href="https://doi.org/10.5281/zenodo.8104278">Data</a>
     ·
@@ -162,4 +162,12 @@ SELMA (https://selma-project.eu).
 
 ## Paper Citation
 <pre>
+  @misc{benaicha2023exploring,
+      title={Exploring Spoken Named Entity Recognition: A Cross-Lingual Perspective}, 
+      author={Moncef Benaicha and David Thulke and M. A. Tuğtekin Turan},
+      year={2023},
+      eprint={2307.01310},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
 </pre>
