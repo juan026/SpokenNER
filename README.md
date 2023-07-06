@@ -162,7 +162,7 @@ SELMA (https://selma-project.eu).
 
 ## Paper Citation
 <pre>
-  @misc{benaicha2023exploring,
+@misc{benaicha2023exploring,
       title={Exploring Spoken Named Entity Recognition: A Cross-Lingual Perspective}, 
       author={Moncef Benaicha and David Thulke and M. A. Tuğtekin Turan},
       year={2023},
