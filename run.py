@@ -216,7 +216,7 @@ def train():
 
     steps = int(np.ceil(len(train_corpus) / args.batch_size) * args.epochs / torch.cuda.device_count())
     warmup = int(steps / 3)
-    save_eval_steps = 200
+    save_eval_steps = 5000
     logger.info(f"Number of steps: {steps}")
     logger.info(f"Warmup steps: {warmup}")
     logger.info(f"Learning rate: {args.lr}")
@@ -237,6 +237,7 @@ def train():
         fp16=True,
         save_steps=save_eval_steps,
         eval_steps=save_eval_steps,
+        eval_accumulation_steps=20,
         metric_for_best_model="eval_wer",
         greater_is_better=False,
         ignore_data_skip=True,
@@ -354,6 +355,7 @@ def transfer():
         fp16=True,
         save_steps=save_eval_steps,
         eval_steps=save_eval_steps,
+        eval_accumulation_steps=20,
         metric_for_best_model="eval_wer",
         greater_is_better=False,
         ignore_data_skip=True,
