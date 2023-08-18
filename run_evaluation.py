@@ -1,6 +1,5 @@
-# File: run.py, Project: SpokenNer
-# Created by Moncef Benaicha
-# Contact: support@moncefbenaicha.me
+#%%
+
 
 import src.services
 from src.services import log_factory
@@ -34,6 +33,9 @@ from transformers import (
 from torch.utils.data import DataLoader
 import numpy as np
 from tqdm import tqdm
+import spacy
+from spacy import displacy
+
 resampler = {
     32000: torchaudio.transforms.Resample(orig_freq=32000, new_freq=16000),
     44100: torchaudio.transforms.Resample(orig_freq=44100, new_freq=16000),
@@ -57,7 +59,7 @@ class LoggingCallback(TrainerCallback):
                 f'Training, Epoch: {int(state.epoch)+1}/{state.num_train_epochs}, Step: {state.global_step}/{state.max_steps}, Training Loss: {current["loss"]:.4f}, Lr: {current["learning_rate"]:.9f}')
 
 
-def evaluate(data_path, device_name, device, asr_model, clips_path, vocab_path):
+def evaluate(data_path, device_name, device, asr_model, vocab_path):
     logger.info("************* Evaluate function **************")
     logger.info(f"Using Device: {device} {'name: ' + device_name if device != 'cpu' else ''}")
     logger.info(f"Loading model from: {asr_model}")
@@ -71,14 +73,17 @@ def evaluate(data_path, device_name, device, asr_model, clips_path, vocab_path):
     )
     pre_processor = DataPreProcessor()
 
+    spacy_ner = spacy.load("en_core_web_sm")
+
+
 
   
    
     logger.info("Evaluation started ...")
-    for f in tqdm(data_path):
+    for f in data_path:
         file_name, target_transcription = f
 
-        audio, sr = torchaudio.load(os.path.join(clips_path, file_name))
+        audio, sr = torchaudio.load(file_name)#os.path.join(clips_path, file_name))
         if sr != 16000:
             audio = resampler[sr].forward(audio.squeeze(0)).numpy()
         else:
@@ -107,7 +112,24 @@ def evaluate(data_path, device_name, device, asr_model, clips_path, vocab_path):
         
         prediction = asr.processor.batch_decode(torch.argmax(output.logits, dim=-1))
         tokens, labels, predicted_text = pre_processor.reverse_ner_transcript_tagging(prediction[0])
-       
+
+        print("Original Text: {}".format(target_transcription))
+        print("Predicted Text: {}".format(predicted_text))
+        print()
+        print("###################################################")
+        print("Spacy: ")
+        output_spacy_ner = spacy_ner(predicted_text)
+        for word in output_spacy_ner.ents:
+            print(word.text, word.label_)
+        #displacy.render(output_spacy_ner, style="ent", jupyter=True)
+        print("###################################################")
+        print()
+        print("###################################################")
+        print("Spoken NER:")
+        for t, l in zip(tokens, labels):
+            print("Token: {} - Label: {}".format(t, l))
+        print("###################################################")
+        print()
    
     logger.info("""
         Done.
@@ -117,28 +139,37 @@ def evaluate(data_path, device_name, device, asr_model, clips_path, vocab_path):
 
 if __name__ == '__main__':
 
+    parser = argparse.ArgumentParser(
+                    prog='Spoken NER',
+                    description='Run inferences on mp3 audio recordings.',)
+    parser.add_argument('--asr_model', type=str, default="/home/juan/NLP_Project1/model_trained") 
+    parser.add_argument('--audio_path', type=str, default="/home/juan/NLP_Project1/Alex.mp3") 
+    parser.add_argument('--audio_transcription', type=str, default="")
+    parser.add_argument('--vocab_path', type=str, default="/home/juan/NLP_Project1/cv-corpus-12.0-2022-12-07-en/en/en_vocab_with_tags.json") 
+    parser.add_argument('--output_path', type=str, default="/home/juan/NLP_Project1/cv-corpus-12.0-2022-12-07-en/evalOffline/") 
+
+    args = parser.parse_args()
+
    
     # ***************** Evaluate *****************
 
     #Path of the ASR model
-    asr_model = "/home/juan/NLP_Project1/model_trained"
+    asr_model = args.asr_model
         
        
     task = "End2end Evaluation en XLS-R 300" 
         
  
-    data_path = [["common_voice_en_27710027.mp3", "Joe Keaton disapproved of films and Buster also had reservations about the medium"]]
+    data_path = [[args.audio_path, args.audio_transcription]]
+    #["common_voice_en_27710027.mp3", "Joe Keaton disapproved of films and Buster also had reservations about the medium"]]
     
-    clips_path = "/home/juan/NLP_Project1/cv-corpus-12.0-2022-12-07-en/en/clips"
        
 
-    vocab_path = "/home/juan/NLP_Project1/cv-corpus-12.0-2022-12-07-en/en/en_vocab_with_tags.json"
+    vocab_path = args.vocab_path
        
-
-
     seed = 77773
   
-    output_path = "/home/juan/NLP_Project1/cv-corpus-12.0-2022-12-07-en/evalOffline/"
+    output_path = args.output_path
        
   
     init(seed)
@@ -151,5 +182,4 @@ if __name__ == '__main__':
     log_factory.change_log_output_file(
         logger, os.path.join(output_path, "output.log")
     )
-    evaluate(data_path, device_name, device, asr_model, clips_path, vocab_path)
-       
+    evaluate(data_path, device_name, device, asr_model, vocab_path)
